@@ -1,0 +1,6 @@
+<h2>New York Times RSS</h2>
+<ul>
+<% @feed.items.first(10).each do |item| %>
+<a href=<%= "#{item.link}" %>><li>Title: <%= "#{item.title}" %></a>
+  <% end %>
+<ul>

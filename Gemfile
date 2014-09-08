@@ -8,6 +8,7 @@ gem 'redis',  '3.1.0'
 # only used in development locally
 group :development do
   gem 'twitter'
+  gem 'httparty'
   gem 'pry'
   gem 'shotgun'
 end

@@ -1,0 +1,59 @@
+  <form method="Post" action="/feeds/search">
+  <input type="text" name="searchnytimes" placeholder="search nytimes" />
+  <input type="submit" value="Search" />
+  </form>
+
+  <form method="Post" action="/feeds/search">
+  <input type="text" name="searchtwitter" placeholder="search twitter" />
+  <input type="submit" value="Search" />
+  </form>
+
+  <form method="Post" action="/feeds/search">
+  <input type="text" name="searchweather" placeholder="search weather" />
+  <input type="submit" value="Search" />
+  </form>
+
+  <% if @weather_search %>
+  <a href="<%= @weather_id.gsub("weather:","feed/") %>"<h2>Weather</h2></a>
+  <ul>
+    <a href="<%= @link %>"><li><%= @weather_search %></li></a>
+  </ul>
+
+
+  <% end %>
+
+  <% if  @searched_array %>
+  <h2>NYTimes Articles</h2>
+  <%  @searched_array.each do |article| %>
+
+    <ul>
+      <a href="<%= article["web_url"] %>"><li><%= article["headline"]["main"] %></li></a>
+        </ul>
+       <% end %>
+
+  <% end %>
+
+
+  <% if @last_tweets %>
+  <h2>Tweets</h2>
+
+      <%  @last_tweets.each do |tweet| %>
+      <ul>
+        <a href="<%= tweet[:url] %>"><li><%= tweet[:content] %></li></a>
+    </ul>
+
+        <% end %>
+
+
+  <% end %>
+
+
+
+
+
+
+
+
+
+
+

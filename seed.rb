@@ -1,0 +1,44 @@
+require 'redis'
+require 'json'
+require 'uri'
+
+uri = URI.parse(ENV["REDISTOGO_URL"])
+$redis = Redis.new({:host => uri.host,
+                    :port => uri.port,
+                    :password => uri.password})
+
+$redis.flushdb
+
+twitter = [
+  {
+   "name" => "Twitter",
+   "type" => "api",
+   "search_term" => "horror"
+   }
+]
+
+nytimes = [{
+    "name" => "NYTimes",
+    "type" => "api",
+    "search_term" => "horror"
+}
+]
+
+weather = [{
+  "name" => "Weather Underground",
+  "type" => "api",
+  "search_term" => "Brooklyn, NY"
+}
+]
+
+twitter.each_with_index do |feed, index|
+  $redis.set("twitter:#{index + 1}", feed.to_json)
+end
+
+nytimes.each_with_index do |feed, index|
+  $redis.set("nytimes:#{index + 1}", feed.to_json)
+end
+
+weather.each_with_index do |feed, index|
+  $redis.set("weather:#{index + 1}", feed.to_json)
+end

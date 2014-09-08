@@ -1,0 +1,25 @@
+
+
+<ul>
+<% @myfeeds.each do |feed| %>
+<% if feed["name"] != "" %>
+
+<h1><%= feed["name"] %></h1>
+<% if feed["value"] == @weather %>
+<li><%= feed["value"] %></li>
+<% else %>
+<% feed["value"].split("{{}}").each do |item| %>
+<ul>
+<li><%= item %></li>
+</ul>
+<% end %>
+
+
+  <% end %>
+
+
+<% end %>
+<% end %>
+</ul>
+
+<a href="/feeds">Add more feeds</a>
