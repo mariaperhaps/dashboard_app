@@ -1,0 +1,11 @@
+<% if @last_tweets %>
+<h2>Tweets</h2>
+
+    <%  @last_tweets.each do |tweet| %>
+    <ul>
+      <a href="<%= tweet[:url] %>"><li><%= tweet[:content] %></li></a>
+  </ul>
+
+      <% end %>
+
+<% end %>

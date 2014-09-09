@@ -112,6 +112,21 @@ class App < Sinatra::Base
     render(:erb, :"feeds/index")
   end
 
+  get('/feeds/:id') do
+    feed = JSON.parse($redis.get("feeds:#{params["id"]}"))
+
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
+      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+    end
+
+    @last_tweets = client.search("horror", :result_type => "recent").take(10).collect do |tweet|
+       {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+    end
+
+    render(:erb, :"feeds/show")
+  end
+
   get('/weather/:id') do
     key = "weather:#{params[:id]}"
     @weather_index = $redis.get(key)

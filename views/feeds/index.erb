@@ -50,19 +50,6 @@
   <% end %>
 
 
-  <% if @last_tweets %>
-  <h2>Tweets</h2>
-
-      <%  @last_tweets.each do |tweet| %>
-      <ul>
-        <a href="<%= tweet[:url] %>"><li><%= tweet[:content] %></li></a>
-    </ul>
-
-        <% end %>
-
-  <% end %>
-
-
   <% @tweet_search = $redis.get("tweet_search") %>
 
   <form method="Post" action="/profile">
