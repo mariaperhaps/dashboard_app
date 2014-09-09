@@ -52,22 +52,22 @@ class App < Sinatra::Base
   end
 
   get('/feeds/:id') do
-    @feed = JSON.parse($redis.get("feeds:#{params["id"]}"))
+    @feed   = JSON.parse($redis.get("feeds:#{params["id"]}"))
 
     case @feed["name"]
     when "Twitter"
-      @entries = entries_from_twitter_with(create_twitter_client, "horror")
+      @entries = entries_from_twitter_with(create_twitter_client, current_profile["obsession"])
     when "Weather"
-      @entries = entry_from_weather_for('Brooklyn, NY')
+      @entries = entry_from_weather_for(current_profile["location"])
     when "NYTimes"
-      @entries = entries_from_nytimes_for("horror")
+      @entries = entries_from_nytimes_for(current_profile["location"])
     end
 
     render(:erb, :"feeds/show")
   end
 
   get('/profile') do
-    @profile = JSON.parse($redis.get("profile"))
+    current_profile
     render(:erb, :"profiles/show")
   end
 
@@ -217,6 +217,15 @@ class App < Sinatra::Base
 #   t = ['current_observation']['temp_f']
 #   puts "Current temperature in #{c}, #{s} is: #{t}"
 # end
+
+  #######################
+  # Access User Profile!
+  #######################
+
+  # a really fun pattern!
+  def current_profile
+    @profile ||= JSON.parse($redis.get("profile"))
+  end
 
   #######################
   # Feed Parsing Library
