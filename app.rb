@@ -65,6 +65,7 @@ class App < Sinatra::Base
        { content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
     end
     $redis.set("tweet_search", @last_tweets.to_json)
+
   #parse nytimes $redis
     @nytimes = []
     $redis.keys("*nytimes*").each do |key|
@@ -180,10 +181,10 @@ class App < Sinatra::Base
   end
 
    get('/profile') do
-    @myfeeds =[]
-    $redis.keys("*feed*").each do |key|
-      @myfeeds << get_model(key)
-    end
+    # @myfeeds =[]
+    # $redis.keys("*feed*").each do |key|
+    #   @myfeeds << get_model(key)
+    # end
     render(:erb, :profile)
    end
 
@@ -211,5 +212,43 @@ class App < Sinatra::Base
       $redis.set(key, feed.to_json)
     end
 
+
+   # add weather to profile
+   #  post('/weather') do
+   #   weather_feed =  {
+   #    "name" => "Weather Underground",
+   #    "value" => params[:weather]
+   #  }
+   #    add_feed(weather_feed)
+   #    logger.info @myfeeds
+   #    redirect('/profile')
+   # end
+
+   #add twitter to profile
+   #  post('/twitter') do
+
+   #  twitter_feed = {
+   #    "name" => "Twitter",
+   #    "value" => params[:twitter]
+   #  }
+   #  add_feed(twitter_feed)
+   #  logger.info @myfeeds
+   #  redirect('/profile')
+   # end
+
+
+
+
+
+
+
+
+# def get_weather(city, state)
+#   response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
+#   c = response['location']['city']
+#   s = response['location']['state']
+#   t = ['current_observation']['temp_f']
+#   puts "Current temperature in #{c}, #{s} is: #{t}"
+# end
 
 end

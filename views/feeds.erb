@@ -44,10 +44,15 @@
 
         <% end %>
 
-
   <% end %>
 
 
+  <% @tweet_search = $redis.get("tweet_search") %>
+
+  <form method="Post" action="/profile">
+  <input type="hidden" name="twitter" value="<%= @tweet_search %>" />
+  <input type="submit" value="Add to Profile" />
+  </form>
 
 
 
