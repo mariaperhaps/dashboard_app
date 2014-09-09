@@ -1,0 +1,39 @@
+header {
+  text-align: center;
+  background-color: lightcyan;
+  margin: 1em;
+  padding: 1em;
+  border-radius: 1em;
+}
+
+nav {
+  border: 6px solid white;
+  padding: 0.5em 3em;
+  display: inline-block;
+  border-radius: 2em;
+  cursor: pointer;
+}
+
+nav a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.feed {
+  background-color: darksalmon;
+  padding: 1em;
+  display: inline-block;
+  width: 12em;
+  height: 8em;
+  border-radius: 1em;
+  margin-right: 1em;
+}
+
+.feed a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.feed-list {
+  padding: 0 1em;
+}

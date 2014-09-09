@@ -1,4 +1,20 @@
-  <form method="Post" action="/feeds/search">
+<div class="feed-list">
+
+  <% @feeds.each do |feed| %>
+    <div class="feed">
+      <a href="/feeds/<%= feed["id"] %>"><button>View</button></a>
+      <p><%= feed["name"] %></p>
+      <form method="POST" action="/profile">
+        <input type="hidden" name="_method" value="PUT" />
+        <input type="submit" value="Add" />
+      </form>
+    </div>
+  <% end %>
+
+</div>
+
+
+  <!-- <form method="Post" action="/feeds/search">
   <input type="text" name="searchnytimes" placeholder="search nytimes" />
   <input type="submit" value="Search" />
   </form>
@@ -52,13 +68,4 @@
   <form method="Post" action="/profile">
   <input type="hidden" name="twitter" value="<%= @tweet_search %>" />
   <input type="submit" value="Add to Profile" />
-  </form>
-
-
-
-
-
-
-
-
-
+  </form> -->

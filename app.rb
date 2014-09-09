@@ -45,63 +45,71 @@ class App < Sinatra::Base
 
   get('/feeds') do
 
-#parse twitter $redis
-    @twitter = []
-    $redis.keys("*twitter*").each do |key|
-      twitter_hash = JSON.parse($redis.get(key))
-      twitter_hash["id"] = key
-      @twitter.push(twitter_hash)
-      @twitter_sort = @twitter.sort_by { |k| k["id"]}
-    end
-    #isolate search term
-    @twitter_term = @twitter_sort.last["search_term"]
-
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+    # A LIST OF THE FEEDS
+    @feeds = $redis.keys("*feeds*").map do |key|
+      JSON.parse($redis.get(key))
     end
 
-    @last_tweets = client.search(@twitter_term, :result_type => "recent").take(10).collect do |tweet|
-       { content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
-    end
-    $redis.set("tweet_search", @last_tweets.to_json)
 
-  #parse nytimes $redis
-    @nytimes = []
-    $redis.keys("*nytimes*").each do |key|
-      nytimes_hash = JSON.parse($redis.get(key))
-      nytimes_hash["id"] = key
-      @nytimes.push(nytimes_hash)
-      @nytimes_sort = @nytimes.sort_by {|k| k["id"]}
-    end
 
-    #isolate search term
-    term = @nytimes_sort.last["search_term"]
+    # parse twitter $redis
+    # @twitter = []
+    # $redis.keys("*twitter*").each do |key|
+    #   twitter_hash = JSON.parse($redis.get(key))
+    #   twitter_hash["id"] = key
+    #   @twitter.push(twitter_hash)
+    #   @twitter_sort = @twitter.sort_by { |k| k["id"]}
+    # end
+    # # isolate search term
+    # @twitter_term = @twitter_sort.last["search_term"]
+    #
+    # client = Twitter::REST::Client.new do |config|
+    #   config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
+    #   config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+    # end
+    #
+    # @last_tweets = client.search(@twitter_term, :result_type => "recent").take(10).collect do |tweet|
+    #    { content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+    # end
+    # $redis.set("tweet_search", @last_tweets.to_json)
+    #
+    # # parse nytimes $redis
+    # @nytimes = []
+    # $redis.keys("*nytimes*").each do |key|
+    #   nytimes_hash = JSON.parse($redis.get(key))
+    #   nytimes_hash["id"] = key
+    #   @nytimes.push(nytimes_hash)
+    #   @nytimes_sort = @nytimes.sort_by {|k| k["id"]}
+    # end
+    #
+    # # isolate search term
+    # term = @nytimes_sort.last["search_term"]
+    #
+    # response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
+    #   @searched_array = response["response"]["docs"]
+    #
+    # # parse weather $redis
+    # @weather_underground = []
+    # $redis.keys("*weather*").each do |key|
+    #   weather_hash = JSON.parse($redis.get(key))
+    #   weather_hash["id"] = key
+    #   @weather_underground.push(weather_hash)
+    #   @weather_underground_sort = @weather_underground.sort_by {|k| k["id"]}
+    # end
+    #
+    # @weather_term = @weather_underground_sort.last["search_term"]
+    # @weather_id = @weather_underground_sort.last["id"]
+    #
+    # state = @weather_term.split(",")[1].gsub(" ","")
+    # city = @weather_term.split(",")[0]
+    # response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
+    #
+    # location = response['location']['city']
+    # temp = response['current_observation']['temp_f']
+    # @link = response["current_observation"]["forecast_url"]
+    # @weather_search = "The current temp in #{location} is #{temp} degrees"
 
-    response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
-      @searched_array = response["response"]["docs"]
-
-    #parse weather $redis
-    @weather_underground = []
-    $redis.keys("*weather*").each do |key|
-      weather_hash = JSON.parse($redis.get(key))
-      weather_hash["id"] = key
-      @weather_underground.push(weather_hash)
-      @weather_underground_sort = @weather_underground.sort_by {|k| k["id"]}
-    end
-    @weather_term = @weather_underground_sort.last["search_term"]
-    @weather_id = @weather_underground_sort.last["id"]
-
-    state = @weather_term.split(",")[1].gsub(" ","")
-      city = @weather_term.split(",")[0]
-      response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
-
-      location = response['location']['city']
-      temp = response['current_observation']['temp_f']
-      @link = response["current_observation"]["forecast_url"]
-      @weather_search = "The current temp in #{location} is #{temp} degrees"
-
-    render(:erb, :feeds)
+    render(:erb, :"feeds/index")
   end
 
   get('/weather/:id') do
