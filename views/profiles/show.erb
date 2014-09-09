@@ -3,4 +3,14 @@
   <h3>Hi <%= @profile["name"] %>!</h3>
   <p>It seems that you love '<%= @profile["obsession"] %>.'</p>
   <p>And you live in '<%= @profile["location"] %>.'</p>
-</div
+</div>
+
+<div class="feed-list">
+  <h2>Profile's Feeds</h2>
+
+  <% @feeds.each do |feed| %>
+    <div class="feed-entries">
+      <%= render(:erb, :"feeds/feed_templates/_#{feed["name"]}", :locals => {:entries => get_entries(feed)}) %>
+    </div>
+  <% end %>
+</div>
