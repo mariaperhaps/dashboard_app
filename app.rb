@@ -63,7 +63,7 @@ class App < Sinatra::Base
   end
 
   get('/feeds/:id') do
-    @feed   = JSON.parse($redis.get("feeds:#{params["id"]}"))
+    @feed    = JSON.parse($redis.get("feeds:#{params["id"]}"))
     @entries = get_entries(@feed)
 
     render(:erb, :"feeds/show")
@@ -72,10 +72,17 @@ class App < Sinatra::Base
   get('/profile') do
     # set the @profile instance!
     profile = current_profile
-
-    @feeds = current_profile["feeds"].map {|feed_id| JSON.parse($redis.get("feeds:#{feed_id}"))}
+    @feeds  = current_profile["feeds"].map {|feed_id| JSON.parse($redis.get("feeds:#{feed_id}"))}
 
     render(:erb, :"profiles/show")
+  end
+
+  put('/profile') do
+    temp_profile = current_profile
+    temp_profile["feeds"] << params["feed_id"]
+    $redis.set("profile", temp_profile.to_json)
+
+    redirect to('/profile')
   end
 
   get('/weather/:id') do
