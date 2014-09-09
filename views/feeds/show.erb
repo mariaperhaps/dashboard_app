@@ -1,28 +1,4 @@
-<% if @last_tweets %>
-<h2>Tweets</h2>
 
-    <%  @last_tweets.each do |tweet| %>
-    <ul>
-      <a href="<%= tweet[:url] %>"><li><%= tweet[:content] %></li></a>
-  </ul>
-
-      <% end %>
-
-<% elsif @weather_search %>
-<h2>Weather</h2>
-
-<ul>
-  <a href="<%= @link %>"><li><%= @weather_search %></li></a>
-</ul>
-
-
-<% elsif  @searched_array %>
-<h2>NYTimes Articles</h2>
-<%  @searched_array.each do |article| %>
-
-  <ul>
-    <a href="<%= article["web_url"] %>"><li><%= article["headline"]["main"] %></li></a>
-      </ul>
-     <% end %>
-
-<% end %>
+<div class="feed-entries">
+  <%= render(:erb, :"feeds/feed_templates/_#{@feed["name"]}", :locals => {:entries => @entries}) %>
+</div>

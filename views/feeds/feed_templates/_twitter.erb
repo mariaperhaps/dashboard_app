@@ -1,0 +1,6 @@
+<h2>Tweets</h2>
+<%  entries.each do |tweet| %>
+  <ul>
+    <li><a href="<%= tweet[:url] %>"><%= tweet[:content] %></a></li>
+  </ul>
+<% end %>

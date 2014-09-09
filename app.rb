@@ -44,84 +44,23 @@ class App < Sinatra::Base
   end
 
   get('/feeds') do
-
-    # A LIST OF THE FEEDS
     @feeds = $redis.keys("*feeds*").map do |key|
       JSON.parse($redis.get(key))
     end
-
-
-
-    # parse twitter $redis
-    # @twitter = []
-    # $redis.keys("*twitter*").each do |key|
-    #   twitter_hash = JSON.parse($redis.get(key))
-    #   twitter_hash["id"] = key
-    #   @twitter.push(twitter_hash)
-    #   @twitter_sort = @twitter.sort_by { |k| k["id"]}
-    # end
-    # # isolate search term
-    # @twitter_term = @twitter_sort.last["search_term"]
-    #
-    # $redis.set("tweet_search", @last_tweets.to_json)
-    #
-    # # parse nytimes $redis
-    # @nytimes = []
-    # $redis.keys("*nytimes*").each do |key|
-    #   nytimes_hash = JSON.parse($redis.get(key))
-    #   nytimes_hash["id"] = key
-    #   @nytimes.push(nytimes_hash)
-    #   @nytimes_sort = @nytimes.sort_by {|k| k["id"]}
-    # end
-    #
-    # # isolate search term
-    # term = @nytimes_sort.last["search_term"]
-    #
-    # response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
-    #   @searched_array = response["response"]["docs"]
-    #
-    # # parse weather $redis
-    # @weather_underground = []
-    # $redis.keys("*weather*").each do |key|
-    #   weather_hash = JSON.parse($redis.get(key))
-    #   weather_hash["id"] = key
-    #   @weather_underground.push(weather_hash)
-    #   @weather_underground_sort = @weather_underground.sort_by {|k| k["id"]}
-    # end
-    #
-    # @weather_term = @weather_underground_sort.last["search_term"]
-    # @weather_id = @weather_underground_sort.last["id"]
-    #
-    # state = @weather_term.split(",")[1].gsub(" ","")
-    # city = @weather_term.split(",")[0]
 
     render(:erb, :"feeds/index")
   end
 
   get('/feeds/:id') do
-    feed = JSON.parse($redis.get("feeds:#{params["id"]}"))
+    @feed = JSON.parse($redis.get("feeds:#{params["id"]}"))
 
-    if feed["name"] == "Twitter"
-      client = Twitter::REST::Client.new do |config|
-        config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-        config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
-      end
-
-      @last_tweets = client.search("horror", :result_type => "recent").take(10).collect do |tweet|
-         {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
-      end
-    elsif feed["name"] == "Weather"
-      response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{'NY'}/#{'Brooklyn'}.json")
-
-      location = response['location']['city']
-      temp     = response['current_observation']['temp_f']
-      @link    = response["current_observation"]["forecast_url"]
-      @weather_search = "The current temp in #{'Brooklyn, NY'} is #{temp} degrees"
-    elsif feed["name"] == "NYTimes"
-      term = 'horror'
-
-      response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
-      @searched_array = response["response"]["docs"]
+    case @feed["name"]
+    when "Twitter"
+      @entries = entries_from_twitter_with(create_twitter_client, "horror")
+    when "Weather"
+      @entries = entry_from_weather_for('Brooklyn, NY')
+    when "NYTimes"
+      @entries = entries_from_nytimes_for("horror")
     end
 
     render(:erb, :"feeds/show")
@@ -273,5 +212,37 @@ class App < Sinatra::Base
 #   t = ['current_observation']['temp_f']
 #   puts "Current temperature in #{c}, #{s} is: #{t}"
 # end
+
+  #######################
+  # Feed Parsing Library
+  #######################
+
+  def create_twitter_client
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
+      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+    end
+  end
+
+  def entries_from_twitter_with(client, term)
+    entries = client.search(term, :result_type => "recent").take(10).collect do |tweet|
+       {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+    end
+  end
+
+  def entries_from_nytimes_for(term)
+    response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
+    entries = response["response"]["docs"]
+  end
+
+  def entry_from_weather_for(location)
+    state = location.split(",")[1].gsub(" ","")
+    city = location.split(",")[0]
+    response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
+    location = response['location']['city']
+    temp     = response['current_observation']['temp_f']
+    link    = response["current_observation"]["forecast_url"]
+    entry = {text: "The current temp in #{location} is #{temp} degrees", link: link}
+  end
 
 end
