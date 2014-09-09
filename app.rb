@@ -66,6 +66,11 @@ class App < Sinatra::Base
     render(:erb, :"feeds/show")
   end
 
+  get('/profile') do
+    @profile = JSON.parse($redis.get("profile"))
+    render(:erb, :"profiles/show")
+  end
+
   get('/weather/:id') do
     key = "weather:#{params[:id]}"
     @weather_index = $redis.get(key)

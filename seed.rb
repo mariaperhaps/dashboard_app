@@ -20,6 +20,8 @@ $redis.set("feeds:#{id}", {:id => id, :name => "NYTimes", :type => :api, :url =>
 id = $redis.incr("feed:index")
 $redis.set("feeds:#{id}", {:id => id, :name => "Weather", :type => :api, :url => ''}.to_json)
 
+$redis.set("profile", {:name => "Maria Schettino", :obsession => "Horror", :location => "Brooklyn, NY"}.to_json)
+
 # twitter = [
 #   {
 #    "name" => "Twitter",
