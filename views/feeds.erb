@@ -14,7 +14,7 @@
   </form>
 
   <% if @weather_search %>
-  <a href="<%= @weather_id.gsub("weather:","feed/") %>"<h2>Weather</h2></a>
+  <a href="<%= @weather_id.gsub(":","/") %>"<h2>Weather</h2></a>
   <ul>
     <a href="<%= @link %>"><li><%= @weather_search %></li></a>
   </ul>
