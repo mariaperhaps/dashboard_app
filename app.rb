@@ -63,14 +63,6 @@ class App < Sinatra::Base
     # # isolate search term
     # @twitter_term = @twitter_sort.last["search_term"]
     #
-    # client = Twitter::REST::Client.new do |config|
-    #   config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-    #   config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
-    # end
-    #
-    # @last_tweets = client.search(@twitter_term, :result_type => "recent").take(10).collect do |tweet|
-    #    { content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
-    # end
     # $redis.set("tweet_search", @last_tweets.to_json)
     #
     # # parse nytimes $redis
@@ -102,12 +94,6 @@ class App < Sinatra::Base
     #
     # state = @weather_term.split(",")[1].gsub(" ","")
     # city = @weather_term.split(",")[0]
-    # response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
-    #
-    # location = response['location']['city']
-    # temp = response['current_observation']['temp_f']
-    # @link = response["current_observation"]["forecast_url"]
-    # @weather_search = "The current temp in #{location} is #{temp} degrees"
 
     render(:erb, :"feeds/index")
   end
@@ -115,13 +101,27 @@ class App < Sinatra::Base
   get('/feeds/:id') do
     feed = JSON.parse($redis.get("feeds:#{params["id"]}"))
 
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
-    end
+    if feed["name"] == "Twitter"
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
+        config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+      end
 
-    @last_tweets = client.search("horror", :result_type => "recent").take(10).collect do |tweet|
-       {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+      @last_tweets = client.search("horror", :result_type => "recent").take(10).collect do |tweet|
+         {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+      end
+    elsif feed["name"] == "Weather"
+      response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{'NY'}/#{'Brooklyn'}.json")
+
+      location = response['location']['city']
+      temp     = response['current_observation']['temp_f']
+      @link    = response["current_observation"]["forecast_url"]
+      @weather_search = "The current temp in #{'Brooklyn, NY'} is #{temp} degrees"
+    elsif feed["name"] == "NYTimes"
+      term = 'horror'
+
+      response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
+      @searched_array = response["response"]["docs"]
     end
 
     render(:erb, :"feeds/show")

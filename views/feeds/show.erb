@@ -8,4 +8,21 @@
 
       <% end %>
 
+<% elsif @weather_search %>
+<h2>Weather</h2>
+
+<ul>
+  <a href="<%= @link %>"><li><%= @weather_search %></li></a>
+</ul>
+
+
+<% elsif  @searched_array %>
+<h2>NYTimes Articles</h2>
+<%  @searched_array.each do |article| %>
+
+  <ul>
+    <a href="<%= article["web_url"] %>"><li><%= article["headline"]["main"] %></li></a>
+      </ul>
+     <% end %>
+
 <% end %>
