@@ -42,6 +42,6 @@ header a {
   padding: 0 1em;
 }
 
-.profile {
+.profile, .profile .feed-list {
   margin-left: 1em;
 }

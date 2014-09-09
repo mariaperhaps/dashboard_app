@@ -6,7 +6,7 @@
       <p><%= feed["name"] %></p>
       <form method="POST" action="/profile">
         <input type="hidden" name="_method" value="PUT" />
-        <input type="submit" value="Add" />
+        <input type="submit" value="Add" <%= 'disabled' if current_profile_has(feed) %> />
       </form>
     </div>
   <% end %>

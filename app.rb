@@ -234,6 +234,11 @@ class App < Sinatra::Base
     @profile ||= JSON.parse($redis.get("profile"))
   end
 
+  def current_profile_has(feed)
+    # binding.pry
+    current_profile["feeds"].include?(feed["id"].to_s)
+  end
+
   #######################
   # Feed Parsing Library
   #######################
