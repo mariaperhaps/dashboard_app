@@ -45,3 +45,8 @@ header a {
 .profile, .profile .feed-list {
   margin-left: 1em;
 }
+
+.button {
+  margin-left: 2em;
+ margin-bottom: 2em;
+}
