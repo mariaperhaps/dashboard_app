@@ -3,7 +3,7 @@
 
 ###Overview
 
-<a href="http://vast-spire-9149.herokuapp.com/feeds">Dashy</a> is web-application designed to allow a user to browse a list of feeds from popular sites, view feeds, search feeds, and add a feeds to their profile page. 
+<a href="http://vast-spire-9149.herokuapp.com/feeds">Dashy</a> is web-application designed to allow a user to browse a list of feeds from popular sites, view feeds, search feeds, and add a feed to his/her profile page. 
 
 Dashy was developed by Maria Schettino as the first individual project for the WDI immersive class at General Assembly in New York, NY. 
 
