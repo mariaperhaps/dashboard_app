@@ -59,7 +59,6 @@ class App < Sinatra::Base
 
     @feed    = JSON.parse($redis.get("feeds:#{params["id"]}"))
     @entries = get_entries(@feed)
-    # @searched_entries = get_search_entries(@feed)
     render(:erb, :"feeds/show")
   end
 
