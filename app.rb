@@ -54,25 +54,25 @@ class App < Sinatra::Base
     render(:erb, :"feeds/index")
   end
 
+  get('/feeds/search') do
+    @feed    = JSON.parse($redis.get("feeds:#{params["feed_id"]}"))
+    case @feed["name"]
+      when "Twitter"
+        @entries = entries_from_twitter_with(create_twitter_client, params["search"])
+      when "Weather"
+        @entries = entry_from_weather_for(params["search"])
+      when "NYTimes"
+        @entries = entries_from_nytimes_for(params["search"])
+    end
+    render(:erb, :"feeds/show")
+  end
+
   # feeds SHOW
   get('/feeds/:id') do
     @feed    = JSON.parse($redis.get("feeds:#{params['id']}"))
     @entries = get_entries(@feed)
     render(:erb, :"feeds/show")
   end
-
-get('/feeds/search') do
-  @feed    = JSON.parse($redis.get("feeds:#{params["feed_id"]}"))
-  case @feed["name"]
-    when "Twitter"
-      @entries = entries_from_twitter_with(create_twitter_client, params["search"])
-    when "Weather"
-      @entries = entry_from_weather_for(params["search"])
-    when "NYTimes"
-      @entries = entries_from_nytimes_for(params["search"])
-  end
-  render(:erb, :"feeds/show")
-end
 
   # profile SHOW
   get('/profile') do
