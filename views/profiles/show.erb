@@ -7,5 +7,14 @@
 <div class="feed-list">
   <h2>Profile's Feeds</h2>
 
-
+  <% @feeds.each do |feed| %>
+    <div class="feed-entries">
+      <%= render(:erb, :"feeds/feed_templates/_#{feed["name"].downcase}", :locals => {:entries => get_entries(feed)}) %>
+      <form class="button" method="POST" action="/profile">
+        <input type="hidden" name="_method" value="DELETE" />
+        <input type="hidden" name="feed_id" value="<%= feed["id"] %>" />
+        <input type="submit" value="Remove"/>
+      </form>
+    </div>
+  <% end %>
 </div>
