@@ -3,7 +3,7 @@ require 'open-uri'
 require 'twitter'
 require 'httparty'
 require 'rss'
-
+require 'pry' if ENV['RACK_ENV'] == "development"
 require 'redis'
 require 'json'
 require 'uri'
@@ -56,7 +56,6 @@ class App < Sinatra::Base
 
   # feeds SHOW
   get('/feeds/:id') do
-
     @feed    = JSON.parse($redis.get("feeds:#{params["id"]}"))
     @entries = get_entries(@feed)
     render(:erb, :"feeds/show")
@@ -80,7 +79,6 @@ end
     # set the @profile instance!
     profile = current_profile
     @feeds  = current_profile["feeds"].map {|feed_id| JSON.parse($redis.get("feeds:#{feed_id}"))}
-
     render(:erb, :"profiles/show")
   end
 
