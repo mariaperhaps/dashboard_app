@@ -6,6 +6,9 @@ header {
   border-radius: 1em;
 }
 
+h1 {
+  font-family: 'Lobster', cursive;
+}
 nav {
   border: 6px solid white;
   padding: 0.5em 3em;
@@ -24,11 +27,11 @@ header a {
 }
 
 .feed {
-  background-color: darksalmon;
+  background-color: #0499af;
   padding: 1em;
   display: inline-block;
-  width: 13em;
-  height: 10em;
+  width: 18em;
+  height: 15em;
   border-radius: 1em;
   margin-right: 1em;
 }
@@ -38,14 +41,35 @@ header a {
   color: inherit;
 }
 
+.feed p {
+  font-size: 48px;
+  color: white;
+}
+
 .feed-list {
   padding: 0 1em;
   text-align: center;
+  font-family: 'Lobster Two', cursive;
+}
+
+.feed-list,h2 {
+  font-family: Helvetica;
+  text-align: center;
+}
+
+.feed-entries{
+  text-align: center;
+  font-family: Helvetica;
 }
 
 .profile, .profile .feed-list {
-  margin-left: 1em;
+
+  font-family: Helvetica;
+  border: solid;
+  border-radius: 1em;
+  width: 500px;
   text-align: center;
+  margin-left: 380px;
 }
 
 .button {
@@ -55,6 +79,10 @@ header a {
 
 ul {
   list-style-type: none;
+  text-align: center;
+  margin-right: 3em;
 }
 
-
+.tweets {
+  font-size: 24px;
+}

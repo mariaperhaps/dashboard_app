@@ -187,7 +187,7 @@ class App < Sinatra::Base
 
   def entry_from_weather_for(location)
     state = location.split(",")[1].gsub(" ","")
-    city = location.split(",")[0]
+    city = location.split(",")[0].gsub(" ","_")
     response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
     location = response['location']['city']
     temp     = response['current_observation']['temp_f']
