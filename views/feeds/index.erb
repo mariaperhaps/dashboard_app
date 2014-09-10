@@ -8,12 +8,13 @@
         <input type="hidden" name="_method" value="PUT" />
         <input type="hidden" name="feed_id" value="<%= feed["id"] %>" />
         <input type="submit" value="Add" <%= 'disabled' if current_profile_has(feed) %> />
-        </form>
-        <form  method="GET" action="/feeds/search/:id">
+      </form>
+
+      <form  method="GET" action="/feeds/search">
         <input type="text" name="search" placeholder="search" />
         <input type="hidden" name="feed_id" value="<%= feed["id"] %>" />
         <input type="submit" value="Search" />
-        </form>
+      </form>
 
     </div>
   <% end %>
