@@ -74,7 +74,8 @@ header a {
 
 .button {
   margin-left: 2em;
- margin-bottom: 2em;
+  margin-bottom: 2em;
+  margin-right: 2em;
 }
 
 ul {
@@ -86,3 +87,9 @@ ul {
 .tweets {
   font-size: 24px;
 }
+
+footer {
+  text-align: center;
+  margin-top: 250px;
+}
+
