@@ -3,7 +3,7 @@ require 'open-uri'
 require 'twitter'
 require 'httparty'
 require 'rss'
-require 'pry'
+
 require 'redis'
 require 'json'
 require 'uri'
@@ -23,7 +23,7 @@ class App < Sinatra::Base
     $redis = Redis.new({:host => uri.host,
                         :port => uri.port,
                         :password => uri.password})
-    require 'pry' if ENV["RACK_ENV"] == "development"
+
 
   end
 
