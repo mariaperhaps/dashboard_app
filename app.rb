@@ -19,7 +19,8 @@ class App < Sinatra::Base
     enable :logging
     enable :method_override
     enable :sessions
-    uri = URI.parse("redis://redistogo:bb0f327db7b826157199cdcdaa80ef3d@barreleye.redistogo.com:11386/")
+    # redis://redistogo:bb0f327db7b826157199cdcdaa80ef3d@barreleye.redistogo.com:11386/
+    uri = URI.parse(ENV["REDISTOGO_URL"])
     $redis = Redis.new({:host => uri.host,
                         :port => uri.port,
                         :password => uri.password})
