@@ -14,6 +14,8 @@ group :development do
 end
 
 group :production do
+  gem 'twitter'
+  gem 'httparty'
   # gems specific just in the production environment
 end
 

@@ -23,6 +23,7 @@ class App < Sinatra::Base
     $redis = Redis.new({:host => uri.host,
                         :port => uri.port,
                         :password => uri.password})
+    require 'pry' if ENV["RACK_ENV"] == "development"
 
   end
 
