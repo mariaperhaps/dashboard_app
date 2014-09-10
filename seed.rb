@@ -15,8 +15,8 @@ $redis.set("feed:index", 0)
 # Increment counter and add new feed
 id = $redis.incr("feed:index")
 $redis.set("feeds:#{id}", {:id => id, :name => "Twitter", :type => :gem_api}.to_json)
-id = $redis.incr("feed:index")
-$redis.set("feeds:#{id}", {:id => id, :name => "NYTimes", :type => :api, :url => ''}.to_json)
+# id = $redis.incr("feed:index")
+# $redis.set("feeds:#{id}", {:id => id, :name => "NYTimes", :type => :api, :url => ''}.to_json)
 id = $redis.incr("feed:index")
 $redis.set("feeds:#{id}", {:id => id, :name => "Weather", :type => :api, :url => ''}.to_json)
 

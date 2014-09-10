@@ -62,7 +62,7 @@ class App < Sinatra::Base
     render(:erb, :"feeds/show")
   end
 
-get ('/feeds/search/:id') do
+get('/feeds/search/:id') do
   @feed    = JSON.parse($redis.get("feeds:#{params["feed_id"]}"))
   case @feed["name"]
     when "Twitter"
