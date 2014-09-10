@@ -77,7 +77,7 @@ end
   # profile SHOW
   get('/profile') do
     # set the @profile instance!
-    profile = current_profile
+    @profile = current_profile
     @feeds  = current_profile["feeds"].map {|feed_id| JSON.parse($redis.get("feeds:#{feed_id}"))}
     render(:erb, :"profiles/show")
   end
