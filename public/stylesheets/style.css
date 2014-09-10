@@ -27,8 +27,8 @@ header a {
   background-color: darksalmon;
   padding: 1em;
   display: inline-block;
-  width: 12em;
-  height: 8em;
+  width: 13em;
+  height: 10em;
   border-radius: 1em;
   margin-right: 1em;
 }
@@ -40,13 +40,21 @@ header a {
 
 .feed-list {
   padding: 0 1em;
+  text-align: center;
 }
 
 .profile, .profile .feed-list {
   margin-left: 1em;
+  text-align: center;
 }
 
 .button {
   margin-left: 2em;
  margin-bottom: 2em;
 }
+
+ul {
+  list-style-type: none;
+}
+
+

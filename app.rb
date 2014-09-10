@@ -54,11 +54,25 @@ class App < Sinatra::Base
 
   # feeds SHOW
   get('/feeds/:id') do
+
     @feed    = JSON.parse($redis.get("feeds:#{params["id"]}"))
     @entries = get_entries(@feed)
-
+    # @searched_entries = get_search_entries(@feed)
     render(:erb, :"feeds/show")
   end
+
+get ('/feeds/search/:id') do
+  @feed    = JSON.parse($redis.get("feeds:#{params["feed_id"]}"))
+  case @feed["name"]
+    when "Twitter"
+      @entries = entries_from_twitter_with(create_twitter_client, params["search"])
+    when "Weather"
+      @entries = entry_from_weather_for(params["search"])
+    when "NYTimes"
+      @entries = entries_from_nytimes_for(params["search"])
+  end
+  render(:erb, :"feeds/show")
+end
 
   # profile SHOW
   get('/profile') do
@@ -78,98 +92,24 @@ class App < Sinatra::Base
     redirect to('/profile')
   end
 
-  get('/weather/:id') do
-    key = "weather:#{params[:id]}"
-    @weather_index = $redis.get(key)
-    render(:erb, :feed_id)
+  delete('/profile') do
+    temp_profile = current_profile
+    temp_profile["feeds"].delete(params["feed_id"])
+    $redis.set("profile",temp_profile.to_json)
+    redirect to('/profile')
   end
 
-  get('/rss_feeds') do
-      #NYTimes Movie Reviews RSS
+  # get('/rss_feeds') do
+  #     #NYTimes Movie Reviews RSS
 
-      url = 'http://rss.nytimes.com/services/xml/rss/nyt/Movies.xml'
-       open(url) do |rss|
-       @feed = RSS::Parser.parse(rss)
-   end
-    render(:erb, :rss)
-  end
-
-  post('/feeds/search') do
-    #Weather
-    if params[:searchweather]
-      state = params[:searchweather].split(",")[1].gsub(" ","")
-      city = params[:searchweather].split(",")[0]
-      response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
-
-      location = response['location']['city']
-      temp = response['current_observation']['temp_f']
-      @weather = "The current temp in #{location} is #{temp}"
-
-      add_weather = {"name" => "Weather",
-                     "type" => "api",
-                     "search_term" => params[:searchweather]
-                     }
-
-              add_feed(add_weather, "weather")
-              redirect('/feeds')
-
-    end
-    render(:erb, :feeds)
-
-    #Twitter
-    if params[:searchtwitter]
-      client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
-    end
-      @tweets = client.search(params[:searchtwitter], :result_type => "recent").take(10).collect do |tweet|
-          { content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
-          twit_search = {"name" => "Twitter",
-                         "type" => "api",
-                         "search_term" => params[:searchtwitter]
-                       }
-
-            add_feed(twit_search,"twitter")
-
-      redirect('/feeds')
-
-    end
-    render(:erb, :feeds)
-  end
-
-    #NYTIMES API
-    if params[:searchnytimes]
-      search = params[:searchnytimes]
-      response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{search}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
-      @nytimesarray = response["response"]["docs"]
-      nyt_search = {"name" => "NYTimes",
-                    "type" => "api",
-                    "search_term" => params[:searchnytimes]
-                   }
-
-                  add_feed(nyt_search,"nytimes")
-            redirect('/feeds')
-
-    end
-      render(:erb, :feeds)
-  end
-
-   get('/profile') do
-    # @myfeeds =[]
-    # $redis.keys("*feed*").each do |key|
-    #   @myfeeds << get_model(key)
-    # end
-    render(:erb, :profile)
-   end
-
-   post('/profile') do
-
-   end
+  #     url = 'http://rss.nytimes.com/services/xml/rss/nyt/Movies.xml'
+  #      open(url) do |rss|
+  #      @feed = RSS::Parser.parse(rss)
+  #  end
+  #   render(:erb, :rss)
+  # end
 
 
-   get('/profile/edit') do
-    render(:erb,:profile_edit)
-   end
 
 
    #method for getting model from redis
@@ -186,44 +126,18 @@ class App < Sinatra::Base
       $redis.set(key, feed.to_json)
     end
 
-
-   # add weather to profile
-   #  post('/weather') do
-   #   weather_feed =  {
-   #    "name" => "Weather Underground",
-   #    "value" => params[:weather]
-   #  }
-   #    add_feed(weather_feed)
-   #    logger.info @myfeeds
-   #    redirect('/profile')
-   # end
-
-   #add twitter to profile
-   #  post('/twitter') do
-
-   #  twitter_feed = {
-   #    "name" => "Twitter",
-   #    "value" => params[:twitter]
-   #  }
-   #  add_feed(twitter_feed)
-   #  logger.info @myfeeds
-   #  redirect('/profile')
-   # end
+  # def get_search_entries(feed)
+  #   case feed["name"]
+  #   when "Twitter"
+  #     entries = entries_from_twitter_with(create_twitter_client, "params[:search]")
+  #   when "Weather"
+  #     entries = entry_from_weather_for("params[:search]")
+  #   when "NYTimes"
+  #     entries = entries_from_nytimes_for("params[:search]")
+  #   end
+  # end
 
 
-
-
-
-
-
-
-# def get_weather(city, state)
-#   response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
-#   c = response['location']['city']
-#   s = response['location']['state']
-#   t = ['current_observation']['temp_f']
-#   puts "Current temperature in #{c}, #{s} is: #{t}"
-# end
 
   def get_entries(feed)
     case feed["name"]
