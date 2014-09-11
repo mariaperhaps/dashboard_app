@@ -1,41 +1,8 @@
-require 'sinatra/base'
-require 'open-uri'
-require 'twitter'
-require 'httparty'
-require 'rss'
-require 'pry' if ENV['RACK_ENV'] == "development"
-require 'redis'
-require 'json'
-require 'uri'
+require './application_controller'
 
 
-class App < Sinatra::Base
+class App < ApplicationController
 
-  ########################
-  # Configuration
-  ########################
-
-  configure do
-    enable :logging
-    enable :method_override
-    enable :sessions
-    # redis://redistogo:bb0f327db7b826157199cdcdaa80ef3d@barreleye.redistogo.com:11386/
-    uri = URI.parse(ENV["REDISTOGO_URL"])
-    $redis = Redis.new({:host => uri.host,
-                        :port => uri.port,
-                        :password => uri.password})
-
-
-  end
-
-  before do
-    logger.info "Request Headers: #{headers}"
-    logger.warn "Params: #{params}"
-  end
-
-  after do
-    logger.info "Response Headers: #{response.headers}"
-  end
 
   ########################
   # Routes
@@ -112,28 +79,28 @@ class App < Sinatra::Base
 
 
    #method for getting model from redis
-   def get_model(redis_id)
-     model = JSON.parse($redis.get(redis_id))
-     model["id"] = redis_id
-     model
-    end
+  # def get_model(redis_id)
+  #  model = JSON.parse($redis.get(redis_id))
+  #  model["id"] = redis_id
+  #  model
+  # end
 
     #method for adding a feed
-    def add_feed(feed,redis_key)
-      number = $redis.keys("*#{redis_key}*").count
-      key = "#{redis_key}:#{number + 1}"
-      $redis.set(key, feed.to_json)
-    end
+  # def add_feed(feed,redis_key)
+  #   number = $redis.keys("*#{redis_key}*").count
+  #   key = "#{redis_key}:#{number + 1}"
+  #   $redis.set(key, feed.to_json)
+  # end
 
 
   def get_entries(feed)
     case feed["name"]
     when "Twitter"
-      entries = entries_from_twitter_with(create_twitter_client, current_profile["obsession"])
+      entries_from_twitter_with(create_twitter_client, current_profile["obsession"])
     when "Weather"
-      entries = entry_from_weather_for(current_profile["location"])
+      entry_from_weather_for(current_profile["location"])
     when "NYTimes"
-      entries = entries_from_nytimes_for(current_profile["obsession"])
+      entries_from_nytimes_for(current_profile["obsession"])
     end
   end
 
@@ -156,31 +123,31 @@ class App < Sinatra::Base
   #######################
 
   def create_twitter_client
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = "UMSX6UsfO7baEVnlTMpnBm59K"
-      config.consumer_secret = "wbEJLg2sLMB6A1Ql8GKypriTW0HJ9vrGbNq6zhBMBxQl1YfiBJ"
+    Twitter::REST::Client.new do |config|
+    config.consumer_key    = TWITTER_CLIENT_KEY
+    config.consumer_secret = TWITTER_CLIENT_SECRET
     end
   end
 
   def entries_from_twitter_with(client, term)
-    entries = client.search(term, :result_type => "recent").take(10).collect do |tweet|
-       {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
+    client.search(term, :result_type => "recent").take(10).collect do |tweet|
+      {content: "#{tweet.user.screen_name}: #{tweet.text}", url: "#{tweet.url}" }
     end
   end
 
   def entries_from_nytimes_for(term)
-    response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=2ef91dbc7dbac505b10c9c14faed9c7a:0:69763254")
-    entries = response["response"]["docs"]
+    response = HTTParty.get("http://api.nytimes.com/svc/search/v2/articlesearch.json?q=#{term}&page=1&sort=newest&api-key=#{NYTIMES_API_KEY}")
+      response["response"]["docs"]
   end
 
   def entry_from_weather_for(location)
     state = location.split(",")[1].gsub(" ","")
     city = location.split(",")[0].gsub(" ","_")
-    response = HTTParty.get("http://api.wunderground.com/api/0abb4ae8d46481a9/geolookup/conditions/q/#{state}/#{city}.json")
+    response = HTTParty.get("http://api.wunderground.com/api/#{WEATHER_API_KEY}/geolookup/conditions/q/#{state}/#{city}.json")
     location = response['location']['city']
     temp     = response['current_observation']['temp_f']
     link    = response["current_observation"]["forecast_url"]
-    entry = {text: "The current temp in #{location} is #{temp} degrees", link: link}
+    {text: "The current temp in #{location} is #{temp} degrees", link: link}
   end
 
 end

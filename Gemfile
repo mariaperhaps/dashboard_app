@@ -6,6 +6,7 @@ gem 'sinatra', '1.4.5'
 gem 'redis',  '3.1.0'
 gem 'twitter'
 gem 'httparty'
+gem 'json'
 
 # only used in development locally
 group :development do
