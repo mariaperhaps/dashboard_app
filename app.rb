@@ -125,18 +125,6 @@ class App < Sinatra::Base
       $redis.set(key, feed.to_json)
     end
 
-  # def get_search_entries(feed)
-  #   case feed["name"]
-  #   when "Twitter"
-  #     entries = entries_from_twitter_with(create_twitter_client, "params[:search]")
-  #   when "Weather"
-  #     entries = entry_from_weather_for("params[:search]")
-  #   when "NYTimes"
-  #     entries = entries_from_nytimes_for("params[:search]")
-  #   end
-  # end
-
-
 
   def get_entries(feed)
     case feed["name"]
