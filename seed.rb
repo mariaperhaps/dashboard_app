@@ -23,36 +23,3 @@ $redis.set("feeds:#{id}", {:id => id, :name => "Weather", :type => :api, :url =>
 
 $redis.set("profile", {:name => "Maria Schettino", :obsession => "Horror", :location => "Brooklyn, NY", :feeds => ["2"]}.to_json)
 
-# twitter = [
-#   {
-#    "name" => "Twitter",
-#    "type" => "api",
-#    "search_term" => "horror"
-#    }
-# ]
-#
-# nytimes = [{
-#     "name" => "NYTimes",
-#     "type" => "api",
-#     "search_term" => "horror"
-# }
-# ]
-#
-# weather = [{
-#   "name" => "Weather Underground",
-#   "type" => "api",
-#   "search_term" => "Brooklyn, NY"
-# }
-# ]
-
-# twitter.each_with_index do |feed, index|
-#   $redis.set("twitter:#{index + 1}", feed.to_json)
-# end
-#
-# nytimes.each_with_index do |feed, index|
-#   $redis.set("nytimes:#{index + 1}", feed.to_json)
-# end
-#
-# weather.each_with_index do |feed, index|
-#   $redis.set("weather:#{index + 1}", feed.to_json)
-# end

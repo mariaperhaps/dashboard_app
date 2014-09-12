@@ -1,6 +1,9 @@
-<h2>NYTimes Articles</h2>
+<%= content_tag(:h2, "NYTimes Articles") %>
 <%  entries.each do |article| %>
   <ul>
     <li><a href="<%= article["web_url"] %>"><%= article["headline"]["main"] %></a></li>
+
   </ul>
 <% end %>
+
+

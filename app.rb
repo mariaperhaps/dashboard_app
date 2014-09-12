@@ -2,7 +2,11 @@ require './application_controller'
 
 
 class App < ApplicationController
-
+  include ActionView::Helpers::UrlHelper
+  include ActionView::Helpers::TextHelper
+  include ActionView::Helpers::DateHelper
+  include ActionView::Helpers::TagHelper
+  include ActionView::Helpers::FormHelper
 
   ########################
   # Routes
@@ -64,34 +68,6 @@ class App < ApplicationController
     $redis.set("profile",temp_profile.to_json)
     redirect to('/profile')
   end
-
-  # get('/rss_feeds') do
-  #     #NYTimes Movie Reviews RSS
-
-  #     url = 'http://rss.nytimes.com/services/xml/rss/nyt/Movies.xml'
-  #      open(url) do |rss|
-  #      @feed = RSS::Parser.parse(rss)
-  #  end
-  #   render(:erb, :rss)
-  # end
-
-
-
-
-   #method for getting model from redis
-  # def get_model(redis_id)
-  #  model = JSON.parse($redis.get(redis_id))
-  #  model["id"] = redis_id
-  #  model
-  # end
-
-    #method for adding a feed
-  # def add_feed(feed,redis_key)
-  #   number = $redis.keys("*#{redis_key}*").count
-  #   key = "#{redis_key}:#{number + 1}"
-  #   $redis.set(key, feed.to_json)
-  # end
-
 
   def get_entries(feed)
     case feed["name"]

@@ -1,3 +1,4 @@
+require './helpers/application_helper'
 
 class ApplicationController < Sinatra::Base
 

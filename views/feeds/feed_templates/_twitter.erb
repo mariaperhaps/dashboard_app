@@ -1,4 +1,4 @@
-<h2 class="tweets">Tweets</h2>
+<%= content_tag(:h2, "Twitter", class:"twitter") %>
 <%  entries.each do |tweet| %>
   <ul>
     <li><a href="<%= tweet[:url] %>"><%= tweet[:content] %></a></li>

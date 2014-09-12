@@ -7,6 +7,7 @@ gem 'redis',  '3.1.0'
 gem 'twitter'
 gem 'httparty'
 gem 'json'
+gem 'actionview',    '~> 4.1.5', require: "action_view"
 
 # only used in development locally
 group :development do
